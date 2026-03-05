@@ -79,7 +79,7 @@ export default function EventsPage() {
                                         <a href={ev.link} target="_blank" rel="noopener noreferrer" key={idx} className="group flex items-center p-3.5 bg-white rounded-[24px] shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300 active:scale-[0.98]">
 
                                             <div className="w-16 h-16 rounded-[16px] overflow-hidden bg-gray-100 flex-shrink-0 relative border border-gray-50">
-                                                <img src={ev.image_url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                <Image src={ev.image_url} alt="" width={64} height={64} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
 
                                                 <div className="absolute top-0 left-0 bg-[#A11F22] text-white text-[9px] font-black px-1.5 py-0.5 rounded-br-lg shadow-sm z-10">
                                                     {getDDay(ev.event_date)}

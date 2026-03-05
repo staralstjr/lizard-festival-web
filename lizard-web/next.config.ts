@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.pstatic.net', // 네이버 이미지 서버 허용
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com', // 플레이스홀더 허용
+      },
+    ],
+  },
 };
-
 export default nextConfig;
