@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 💡 VS Code 경고 무시 및 이중 스크롤 방지 */
+@layer base {
+  html,
+  body {
+    @apply overflow-hidden h-full m-0 p-0 fixed w-full;
+    /* iOS 세이프 에어리 대응 및 바운스 방지 */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+
+  /* Next.js 루트 컨테이너 높이 설정 */
+  #__next,
+  [data-reactroot] {
+    @apply h-full;
+  }
+}
+
+/* 💡 스크롤바 숨기기 유틸리티 */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

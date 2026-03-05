@@ -42,10 +42,14 @@ export default function EventsPage() {
 
     return (
         <>
-            <div className="min-h-screen bg-[#F3F2EE] flex justify-center items-center p-4 font-sans text-gray-900 overflow-hidden">
-                <div className="w-full max-w-[390px] h-[844px] bg-[#FAF9F9] rounded-[50px] shadow-3xl overflow-hidden flex flex-col relative tracking-tight">
+            {/* 1. 최상위 부모: 화면을 꽉 채우고 외부 스크롤을 차단합니다. */}
+            <div className="fixed inset-0 h-screen w-full bg-[#F3F2EE] flex justify-center items-center p-0 sm:p-4 font-sans text-gray-900 overflow-hidden">
 
-                    <main className="flex-1 overflow-y-auto p-6 no-scrollbar pb-10">
+                {/* 2. 모바일 프레임: 내부 스크롤의 기준이 됩니다. */}
+                <div className="w-full max-w-[390px] h-full sm:h-[844px] bg-[#FAF9F9] sm:rounded-[50px] shadow-3xl overflow-hidden flex flex-col relative tracking-tight">
+
+                    {/* 3. 메인 컨텐츠 영역: 여기만 스크롤이 발생합니다. */}
+                    <main className="flex-1 overflow-y-auto p-6 no-scrollbar">
 
                         <div className="mb-6 mt-2">
                             <Link href="/" className="inline-flex items-center text-[11px] font-bold text-gray-600 hover:text-[#A11F22] hover:bg-[#F9EAEB] transition-colors bg-white border border-gray-100 px-3.5 py-1.5 rounded-full shadow-sm">
@@ -58,7 +62,7 @@ export default function EventsPage() {
                             <p className="text-xs text-gray-400 mt-2 font-medium">자동 업데이트되는 행사 정보입니다.</p>
                         </div>
 
-                        <section>
+                        <section className="pb-10"> {/* 하단 여백 추가 */}
                             {loading ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-sm text-gray-400 font-medium animate-pulse bg-white rounded-3xl border border-gray-100 shadow-sm">
                                     <span className="text-2xl mb-2">🦎</span>
@@ -88,7 +92,6 @@ export default function EventsPage() {
                                                 <div className="flex items-center text-[10px] text-gray-500 font-medium">
                                                     <span className="truncate">{formatEventDate(ev.event_date)}</span>
                                                     <span className="mx-1.5 text-gray-300">•</span>
-                                                    {/* 💡 여기서 normalizeLocation을 적용하여 "광주에" -> "광주"로 만듭니다. */}
                                                     <span className="truncate font-bold text-gray-600">{normalizeLocation(ev.location)}</span>
                                                 </div>
                                             </div>
@@ -100,12 +103,22 @@ export default function EventsPage() {
 
                     </main>
 
-                    <footer className="h-10 border-t border-gray-100 flex items-center justify-center pb-2 bg-[#FAF9F6]">
+                    {/* 4. 푸터: 바닥에 딱 붙어서 고정됩니다. */}
+                    <footer className="flex-none h-12 border-t border-gray-100 flex items-center justify-center bg-[#FAF9F6] z-20">
                         <p className="text-[9px] text-gray-300 font-medium">© 2025 Ringo Cre. All rights reserved.</p>
                     </footer>
                 </div>
             </div>
+
             <style jsx global>{`
+                /* 5. 브라우저 바닥 스크롤 및 바운스 현상 원천 차단 */
+                html, body {
+                    overflow: hidden !important;
+                    height: 100% !important;
+                    position: fixed;
+                    width: 100%;
+                    -webkit-overflow-scrolling: touch;
+                }
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
