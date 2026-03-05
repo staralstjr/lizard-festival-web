@@ -2,8 +2,10 @@ from pymongo import MongoClient, UpdateOne
 from datetime import datetime
 import certifi
 
+import os
+
 # 💡 주소 확인! (비밀번호 특수문자 있으면 주의해야 함)
-MONGO_URI = "mongodb+srv://admin:lizard1234@cluster0.lgliub5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 
 try:
     # 💡 모든 보안 검사를 느슨하게 풀어서 연결을 시도합니다.
