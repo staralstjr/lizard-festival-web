@@ -12,7 +12,7 @@ try:
         tlsCAFile=certifi.where(),
         tlsAllowInvalidCertificates=True # 인증서 에러 무시
     )
-    db = client["reptile_db"]      
+    db = client["lizard_db"]      
     collection = db["events"]
     print("🔌 [DB] 연결 객체 생성 완료")
 except Exception as e:
