@@ -1,0 +1,50 @@
+{
+  "upcoming_events": [],
+  "this_month_past_events": [
+    {
+      "title": "부산 렙타일포럼은 성공적으로 마무리되었고 다음 포럼 일정은??",
+      "location": null,
+      "event_date": "2026-02-09T00:00:00",
+      "event_type": "렙타일포럼",
+      "source": "naver_blog",
+      "source_url": "https://blog.naver.com/PostView.naver?blogId=tktmaqjf12&logNo=224177160518&redirect=Dlog",
+      "price": null,
+      "description": null,
+      "crawled_at": "2026-02-14T11:15:40.941596"
+    },
+    {
+      "title": "안녕하세요 더쥬입니다 이번 부산 렙타일포럼이 성공적으로 마무리되었습니다....",
+      "location": null,
+      "event_date": "2026-02-09T00:00:00",
+      "event_type": "렙타일포럼",
+      "source": "naver_blog",
+      "source_url": "https://blog.naver.com/PostView.naver?blogId=tktmaqjf12&logNo=224177160518&redirect=Dlog",
+      "price": null,
+      "description": null,
+      "crawled_at": "2026-02-14T11:15:40.941885"
+    },
+    {
+      "title": "렙타일포럼in부산 사전예매 마지막 입니다",
+      "location": null,
+      "event_date": "2026-02-06T00:00:00",
+      "event_type": "렙타일포럼",
+      "source": "naver_blog",
+      "source_url": "https://blog.naver.com/PostView.naver?blogId=tktmaqjf12&logNo=224174313826&redirect=Dlog",
+      "price": null,
+      "description": null,
+      "crawled_at": "2026-02-14T11:15:40.942163"
+    },
+    {
+      "title": "크레 브리더, 샵,입문자 모두가 관심갖게될 역대 최강의 라인업 -렙타일포럼 in 부산",
+      "location": null,
+      "event_date": "2026-02-05T00:00:00",
+      "event_type": "렙타일포럼",
+      "source": "naver_blog",
+      "source_url": "https://blog.naver.com/PostView.naver?blogId=tktmaqjf12&logNo=224172760797&redirect=Dlog",
+      "price": null,
+      "description": null,
+      "crawled_at": "2026-02-14T11:15:40.942449"
+    }
+  ],
+  "updated_at": "2026-02-14T11:15:40.946241"
+}

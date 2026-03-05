@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+Lizard-web/.next/
+Lizard-web/out/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
+.DS_Store
+*.log
+.idea/
+.vscode/

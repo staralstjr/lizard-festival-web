@@ -1,0 +1,15 @@
+# crawler: 파충류 행사 정보 크롤링
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# JS 렌더링이 필요한 사이트용 (필요 시 사용)
+# playwright==1.49.0
+
+# 데이터 검증/저장
+pydantic==2.10.3
+
+# MySQL 데이터베이스 연동 (선택사항)
+sqlalchemy>=2.0.0
+pymysql>=1.1.0
+cryptography>=41.0.0  # pymysql SSL 지원
