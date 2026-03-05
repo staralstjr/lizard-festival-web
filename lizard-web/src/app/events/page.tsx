@@ -21,7 +21,7 @@ export default function EventsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("http://localhost:8000/events")
+        fetch("https://lizard-festival-backend.onrender.com/events")
             .then((res) => res.json())
             .then((json) => {
                 if (json.status === "success" && json.data) {
