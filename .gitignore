@@ -22,3 +22,6 @@ __pycache__/
 *.log
 .idea/
 .vscode/
+
+__pycache__/
+*$py.class
