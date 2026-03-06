@@ -1,128 +1,70 @@
-# Lizard Festival Web
+# 🦎 Ringo Cre: 파충류 행사 & 개체 카드 서비스
 
-**우리 동네 렙타일** — 현재 위치 기반 파충류 샵·특수동물병원·행사 정보를 지도에서 확인하는 웹 서비스입니다.
+**Ringo Cre**는 파충류 브리더를 위한 **모바일 최적화 명함 사이트**이자, 전국 파충류 행사 정보를 실시간으로 큐레이션하는 서비스입니다.
 
-## 프로젝트 구조
+---
+
+## 🌟 주요 특징 (Key Features)
+- **모바일 웹 앱(PWA) 스타일**: `fixed` 레이아웃과 `overflow-hidden`을 적용하여 이중 스크롤을 방지하고 앱과 같은 부드러운 UX를 제공합니다.
+- **실시간 행사 큐레이션**: 네이버 카페(파사모 등)의 5대 주요 행사 데이터를 지능적으로 수집합니다.
+- **지능형 날짜 점수제**: 게시글 내 키워드와 지역명을 분석하여 데이터의 신뢰도를 자동으로 산출합니다.
+- **개체 카드 쇼케이스**: 대표 개체들을 클릭 시 큰 이미지로 보여주며, 팝업 내에서도 좌우 스와이프가 가능합니다.
+- **이미지 우회 기술**: 네이버의 이미지 차단 정책을 `no-referrer` 전략으로 완벽하게 우회하여 포스터를 노출합니다.
+
+---
+
+## 🏗️ 프로젝트 구조 (Architecture)
 
 | 폴더 | 역할 | 기술 스택 |
 |------|------|------------|
-| **Lizard-web** | 프론트엔드 웹사이트 | Next.js 15, React 19, TypeScript, Tailwind CSS |
-| **Lizard-back** | REST API 서버 | Python, FastAPI |
-| **crawler** | 행사 정보 크롤링 | Python, requests, BeautifulSoup4, Playwright |
+| **lizard-web** | 프론트엔드 (Vercel) | Next.js 15, React 19, TypeScript, Tailwind CSS |
+| **lizard-back** | REST API 서버 (Render) | Python 3.11, FastAPI, Pymongo |
+| **crawler** | 데이터 수집 및 가공 | Playwright, Regex Scoring System, GitHub Actions |
+| **Database** | 클라우드 데이터베이스 | MongoDB Atlas (Cluster0) |
 
-## 실행 방법
+---
 
-### 1. 크롤러 (데이터 수집)
+## 🛠️ 기술적 핵심 (Technical Highlights)
 
-```bash
-cd crawler
+### 1. 지능형 크롤러 (Crawler)
+- **Scoring System**: 게시글 제목과 본문에서 지역명, 일시를 추출하여 `data_score`를 부여합니다.
+- **Image Extraction**: 본문 내 이미지 중 해상도와 비율을 계산하여 최적의 포스터 이미지를 자동 선별합니다.
+- **Automation**: **GitHub Actions**를 통해 매일 새벽 3시(KST) 자동으로 크롤링 스케줄링을 실행합니다.
 
-# 의존성 설치 (최초 1회)
-./install_dependencies.sh
-# 또는 수동 설치:
-# .venv/bin/pip install -r requirements.txt
-
-# 크롤러 실행
-.venv/bin/python main.py
-# 또는
-./run.sh
-```
-
-→ 크롤링 결과는 `events.json` 파일로 저장됩니다.
-
-**MySQL 연동 (선택사항):**
-```bash
-# 환경변수 설정
-export DATABASE_URL='mysql+pymysql://user:password@localhost:3306/lizard_festival?charset=utf8mb4'
-
-# 크롤러 실행 (자동으로 MySQL에도 저장됨)
-.venv/bin/python main.py
-```
-
-### 2. 백엔드 API 서버 (FastAPI)
-
-```bash
-cd Lizard-back
-
-# 의존성 설치 (최초 1회)
-.venv/bin/pip install -r requirements.txt
-
-# 서버 실행
-.venv/bin/uvicorn main:app --reload
-```
-
-→ http://localhost:8000 (API 문서: http://localhost:8000/docs)
+### 2. 백엔드 API (FastAPI)
+- **CORS**: 특정 도메인에 대한 보안 통제 및 데이터 요청 허용을 관리합니다.
+- **TTL Index**: MongoDB의 TTL 인덱스를 활용해 30일이 지난 과거 행사 데이터를 자동으로 삭제합니다.
+- **Security**: `os.getenv`를 사용해 `MONGO_URI` 등 민감 정보를 환경 변수로 안전하게 관리합니다.
 
 ### 3. 프론트엔드 (Next.js)
+- **Metadata & SEO**: Open Graph(OG) 및 Favicon 설정을 통해 SNS 공유 시 링고크레 브랜드 이미지를 최적화합니다.
+- **Responsive UI**: 모바일 프레임 규격(390px)에 맞춘 레이아웃으로 모바일 사용자 경험을 극대화했습니다.
 
+---
+
+## 🚀 실행 방법 (Setup & Run)
 ```bash
+# Backend & Crawler (Python)
+# 의존성 설치
+pip install -r requirements.txt
+
+# 크롤러 실행
+python crawler/main_crawler.py
+
+# API 서버 실행
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Frontend(Next.js)
 cd lizard-web
-
-# 의존성 설치 (최초 1회)
 npm install
-
-# 네이버 지도 API 키 설정
-cp .env.local.example .env.local
-# .env.local 에 네이버 API 키 입력:
-# - NEXT_PUBLIC_NAVER_MAP_CLIENT_ID (지도 표시용)
-# - NAVER_CLIENT_ID, NAVER_CLIENT_SECRET (장소 검색용)
-# 발급: https://console.ncloud.com/maps/application → 애플리케이션 등록 → Dynamic Map 선택
-# 검색 API: https://developers.naver.com/apps → 검색 API 활성화
-
-# 개발 서버 실행
 npm run dev
 ```
-
-→ http://localhost:3000
-
-## 데이터 흐름
-
-1. **crawler** → 행사 사이트에서 데이터 수집 (JSON/MySQL 저장)
-2. **Lizard-back** → 수집 데이터를 API로 제공
-3. **Lizard-web** → API를 호출해 사용자에게 표시
-
-## 주요 기능
-
-### 웹 (Lizard-web)
-- **지도**: Kakao Map으로 주변 **파충류 샵**, **특수동물병원** 표시 (Kakao Local API 키워드 검색)
-- **행사**: 크롤링한 렙타일페어 등 행사를 지도 마커 + 사이드바 목록으로 표시
-- **반응형**: 모바일에서 지도 위·아래로 레이아웃 전환
-
-### 크롤러 (행사 정보 수집, 유지)
-- ✅ 빅혼 쇼핑몰 크롤링
-- ✅ 네이버 카페 (파사모) 크롤링 (Playwright 사용)
-- ✅ 네이버 블로그 크롤링
-- ✅ 이번달/다음달 예정 행사만 필터링
-- ✅ 이번달 진행된 행사 별도 분류
-- ✅ MySQL 데이터베이스 연동 지원
-
-### 데이터 관리
-- 자동 중복 제거
-- 과거 데이터 자동 정리 (60일 이상)
-- 날짜순 정렬
-
-## 주의사항
-
-### 크롤러 실행 시
-- **반드시 가상환경의 Python 사용**: `.venv/bin/python main.py`
-- 시스템 Python (`python main.py`) 사용 시 모듈을 찾을 수 없습니다.
-
-### FastAPI 서버 실행 시
-- **Lizard-back 디렉토리에서 실행**: `cd Lizard-back && uvicorn main:app --reload`
-- crawler 디렉토리에서 실행하면 안 됩니다.
-
-## 문제 해결
-
-### "ModuleNotFoundError: No module named 'requests'"
-→ 가상환경에 패키지가 설치되지 않았습니다.
+### 🔐 환경 변수 설정 (.env)
+각 환경에 맞춰 `MONGO_URI`를 설정해야 합니다.
 ```bash
-cd crawler
-./install_dependencies.sh
-```
+# Backend / Crawler
+MONGO_URI=mongodb+srv://admin:password@cluster0...
 
-### "uvicorn 실행 오류"
-→ 잘못된 디렉토리에서 실행했습니다. `Lizard-back` 디렉토리로 이동하세요.
-```bash
-cd Lizard-back
-.venv/bin/uvicorn main:app --reload
+# Frontend
+NEXT_PUBLIC_API_URL=[https://lizard-festival-backend.onrender.com](https://lizard-festival-backend.onrender.com)
 ```
