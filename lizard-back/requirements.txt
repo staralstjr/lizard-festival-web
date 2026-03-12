@@ -1,6 +1,6 @@
-fastapi==0.115.6
-uvicorn==0.32.1
-pymongo==4.10.1
-pydantic==2.10.3
-certifi==2026.03.12
-python-dotenv==1.0.1
+fastapi
+uvicorn
+pydantic
+pymongo
+certifi
+python-dotenv
