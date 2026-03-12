@@ -66,7 +66,7 @@ export default function EventsPage() {
                             {loading ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-sm text-gray-400 font-medium animate-pulse bg-white rounded-3xl border border-gray-100 shadow-sm">
                                     <span className="text-2xl mb-2">🦎</span>
-                                    일정을 불러오는 중입니다...
+                                    처음 일정을 불러올때는 30초 정도 소요될 수 있어요..
                                 </div>
                             ) : events.length === 0 ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-sm text-gray-400 bg-white rounded-3xl border border-gray-100 shadow-sm">
