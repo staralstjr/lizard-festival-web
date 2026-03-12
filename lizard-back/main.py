@@ -1,53 +1,27 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-# 💡 핵심: datetime 클래스와 timezone 객체를 명확히 임포트합니다.
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, List
 import os
 from pymongo import MongoClient
+from bson import ObjectId # 💡 ID 처리를 위해 추가
 import certifi
 import uvicorn
 from dotenv import load_dotenv
 
-# .env 파일 로드 (로컬 환경용)
 load_dotenv()
-
 app = FastAPI()
 
-# 환경 변수 설정
 MONGO_URI = os.getenv("MONGO_URI")
+client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), tlsAllowInvalidCertificates=True)
+db = client["reptile_db"]
+collection = db["events"]
 
-# MongoDB 연결
-try:
-    if not MONGO_URI:
-        # Render 환경에서는 환경 변수가 설정되어 있어야 합니다.
-        print("⚠️ MONGO_URI가 설정되지 않았습니다.")
-    
-    client = MongoClient(
-        MONGO_URI,
-        tlsCAFile=certifi.where(),
-        tlsAllowInvalidCertificates=True
-    )
-    # 실제 연결 확인
-    client.admin.command('ping')
-    db = client["reptile_db"]
-    collection = db["events"]
-    print(f"🔌 [DB] {db.name} 연결 성공")
-except Exception as e:
-    print(f"❌ [DB] 연결 실패: {e}")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-# CORS 설정 (프론트엔드 통신 허용)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# 데이터 모델
 class EventCreate(BaseModel):
+    event_name: str
     title: str
     date: str
     location: str
@@ -55,44 +29,57 @@ class EventCreate(BaseModel):
     image_url: Optional[str] = None
     category: str = "행사"
 
-@app.get("/")
-def read_root():
-    return {"status": "online", "message": "🦎 Ringo API Server"}
-
-# 1. 행사 조회
 @app.get("/events")
 async def get_events():
     try:
-        cursor = collection.find({}, {"_id": 0})
-        all_data = list(cursor)
+        # 💡 관리자 페이지에서 수정/삭제를 하려면 MongoDB의 고유 _id가 필요합니다.
+        cursor = collection.find({})
+        all_data = []
+        for doc in cursor:
+            doc["_id"] = str(doc["_id"]) # ObjectId를 문자열로 변환
+            all_data.append(doc)
         return {"status": "success", "total_count": len(all_data), "data": all_data}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# 2. 관리자 수동 등록 (에러 수정 지점)
 @app.post("/api/events/manual")
 async def create_manual_event(event: EventCreate):
     try:
         event_dict = event.dict()
-        
-        # 💡 [에러 해결] utcnow() 대신 최신 방식인 now(timezone.utc)를 사용합니다.
-        # 이 방식은 파이썬 3.12 이상에서도 완벽하게 작동합니다.
         event_dict["created_at"] = datetime.now(timezone.utc)
         event_dict["is_manual"] = True
-        
-        # 중복 체크
         if collection.find_one({"link": event_dict["link"]}):
             raise HTTPException(status_code=400, detail="이미 등록된 행사 링크입니다.")
-            
         result = collection.insert_one(event_dict)
         return {"success": True, "id": str(result.inserted_id)}
-        
-    except HTTPException as he:
-        raise he
+    except HTTPException as he: raise he
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+# 💡 3. 수정 API (PUT)
+@app.put("/api/events/manual/{event_id}")
+async def update_event(event_id: str, event: EventCreate):
+    try:
+        update_data = event.dict()
+        result = collection.update_one(
+            {"_id": ObjectId(event_id)},
+            {"$set": update_data}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="해당 행사를 찾을 수 없습니다.")
+        return {"success": True, "message": "수정 완료"}
     except Exception as e:
-        # 상세 에러 로그 출력
-        print(f"❌ 서버 에러 발생: {e}")
-        raise HTTPException(status_code=500, detail=f"서버 내부 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 💡 4. 삭제 API (DELETE)
+@app.delete("/api/events/manual/{event_id}")
+async def delete_event(event_id: str):
+    try:
+        result = collection.delete_one({"_id": ObjectId(event_id)})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="해당 행사를 찾을 수 없습니다.")
+        return {"success": True, "message": "삭제 완료"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
