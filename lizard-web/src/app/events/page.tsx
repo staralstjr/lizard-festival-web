@@ -10,7 +10,7 @@ import Link from 'next/link';
 interface Event {
     event_name: string;
     location: string;
-    event_date: string;
+    event_date: string; // 정규화된 날짜 문자열
     full_title: string;
     link: string;
     image_url: string;
@@ -21,12 +21,28 @@ export default function EventsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("https://lizard-festival-backend.onrender.com/events")
+        const apiBase =
+            process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+            "https://lizard-festival-backend.onrender.com";
+
+        fetch(`${apiBase}/events`)
             .then((res) => res.json())
             .then((json) => {
                 if (json.status === "success" && json.data) {
-                    const cleanData = json.data.filter((ev: Event) => {
-                        const isInvalid = ["확인필요", "확인 필요"].some(kw => ev.event_date.includes(kw));
+                    const normalized: Event[] = (json.data as any[]).map((raw) => {
+                        const event_date = String(raw?.event_date ?? raw?.date ?? "");
+                        const event_name = String(raw?.event_name ?? raw?.title ?? "");
+                        const full_title = String(raw?.full_title ?? raw?.title ?? raw?.event_name ?? "");
+                        const location = String(raw?.location ?? "");
+                        const link = String(raw?.link ?? "");
+                        const image_url = String(raw?.image_url ?? "");
+
+                        return { event_date, event_name, full_title, location, link, image_url };
+                    });
+
+                    const cleanData = normalized.filter((ev) => {
+                        if (!ev.event_date) return false;
+                        const isInvalid = ["확인필요", "확인 필요"].some((kw) => ev.event_date.includes(kw));
                         return !isInvalid && isFutureEvent(ev.event_date);
                     });
 
@@ -79,7 +95,11 @@ export default function EventsPage() {
                                         <a href={ev.link} target="_blank" rel="noopener noreferrer" key={idx} className="group flex items-center p-3.5 bg-white rounded-[24px] shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300 active:scale-[0.98]">
 
                                             <div className="w-16 h-16 rounded-[16px] overflow-hidden bg-gray-100 flex-shrink-0 relative border border-gray-50">
-                                                <Image src={ev.image_url} alt="" width={64} height={64} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                {ev.image_url ? (
+                                                    <Image src={ev.image_url} alt="" width={64} height={64} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gray-100" />
+                                                )}
 
                                                 <div className="absolute top-0 left-0 bg-[#A11F22] text-white text-[9px] font-black px-1.5 py-0.5 rounded-br-lg shadow-sm z-10">
                                                     {getDDay(ev.event_date)}

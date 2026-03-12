@@ -4,16 +4,27 @@ import certifi
 
 import os
 
+# 로컬 개발 시 .env의 MONGO_URI를 자동 로드합니다.
+try:
+    from dotenv import load_dotenv  # type: ignore
+
+    load_dotenv()
+except Exception:
+    pass
+
 # 💡 주소 확인! (비밀번호 특수문자 있으면 주의해야 함)
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 
 try:
     # 💡 모든 보안 검사를 느슨하게 풀어서 연결을 시도합니다.
-    client = MongoClient(
-        MONGO_URI, 
-        tlsCAFile=certifi.where(),
-        tlsAllowInvalidCertificates=True # 인증서 에러 무시
-    )
+    mongo_kwargs = {}
+    if MONGO_URI.startswith("mongodb+srv://"):
+        mongo_kwargs = {
+            "tlsCAFile": certifi.where(),
+            "tlsAllowInvalidCertificates": True,  # 인증서 에러 무시(개발 환경)
+        }
+
+    client = MongoClient(MONGO_URI, **mongo_kwargs)
     db = client["reptile_db"]      
     collection = db["events"]
     print("🔌 [DB] 연결 객체 생성 완료")

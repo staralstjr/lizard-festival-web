@@ -13,6 +13,7 @@ export default function AdminPage() {
     const [isSingleDay, setIsSingleDay] = useState(false);
 
     const [formData, setFormData] = useState({
+        event_name: '',
         title: '',
         date: '',
         location: '',
@@ -51,7 +52,7 @@ export default function AdminPage() {
             if (response.ok) {
                 setStatus({ type: 'success', message: '행사가 성공적으로 등록되었습니다!' });
                 // 등록 성공 후 폼 초기화
-                setFormData({ title: '', date: '', location: '', link: '', image_url: '' });
+                setFormData({ event_name: '', title: '', date: '', location: '', link: '', image_url: '' });
                 setIsSingleDay(false);
             } else {
                 const data = await response.json();
@@ -122,6 +123,20 @@ export default function AdminPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="bg-white rounded-[48px] p-8 sm:p-14 shadow-2xl shadow-gray-200/50 border border-gray-50 space-y-10">
+
+                        {/* 업체명 입력 */}
+                        <div>
+                            <label className="flex items-center gap-2 text-[12px] font-black text-gray-400 uppercase tracking-[0.15em] mb-4 px-2">
+                                <PlusCircle size={14} className="text-[#A11F22]" /> 업체 이름
+                            </label>
+                            <input
+                                required
+                                className="w-full px-7 py-5 bg-gray-50 rounded-[24px] border border-transparent focus:bg-white focus:border-[#A11F22] focus:ring-4 focus:ring-[#A11F22]/5 outline-none transition-all font-bold text-gray-950 text-lg shadow-inner"
+                                placeholder="예: krbc / 파충류 동반자"
+                                value={formData.event_name}
+                                onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                            />
+                        </div>
 
                         {/* 행사명 입력 */}
                         <div>

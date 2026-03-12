@@ -4,16 +4,31 @@ import certifi
 
 import os
 
+# 크롤러 실행 위치와 무관하게 .env의 MONGO_URI를 읽습니다.
+try:
+    from dotenv import load_dotenv  # type: ignore
+    from pathlib import Path
+
+    # 우선 crawler/.env, 없으면 프로젝트 루트의 .env를 시도
+    crawler_env = Path(__file__).resolve().parent / ".env"
+    root_env = Path(__file__).resolve().parent.parent / ".env"
+    load_dotenv(crawler_env if crawler_env.exists() else root_env)
+except Exception:
+    pass
+
 # 💡 주소 확인! (비밀번호 특수문자 있으면 주의해야 함)
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 
 try:
     # 💡 모든 보안 검사를 느슨하게 풀어서 연결을 시도합니다.
-    client = MongoClient(
-        MONGO_URI, 
-        tlsCAFile=certifi.where(),
-        tlsAllowInvalidCertificates=True # 인증서 에러 무시
-    )
+    mongo_kwargs = {}
+    if MONGO_URI.startswith("mongodb+srv://"):
+        mongo_kwargs = {
+            "tlsCAFile": certifi.where(),
+            "tlsAllowInvalidCertificates": True,  # 인증서 에러 무시(개발/크롤러 환경)
+        }
+
+    client = MongoClient(MONGO_URI, **mongo_kwargs)
     db = client["lizard_db"]      
     collection = db["events"]
     print("🔌 [DB] 연결 객체 생성 완료")
