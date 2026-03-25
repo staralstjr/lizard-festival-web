@@ -88,20 +88,21 @@ export default function AdminPage() {
         setStatus({ type: '', message: '' });
 
         const finalDate = isSingleDay ? `${formData.date.replace(' (당일)', '')} (당일)` : formData.date.replace(' (당일)', '');
-        const method = editingId ? 'PUT' : 'POST';
-        const url = editingId
-            ? `${API_URL}/api/events/manual/${editingId}`
+        const currentEditingId = editingId || formData._id;
+        const method = currentEditingId ? 'PUT' : 'POST';
+        const url = currentEditingId
+            ? `${API_URL}/api/events/manual/${currentEditingId}`
             : `${API_URL}/api/events/manual`;
 
         try {
             const response = await fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, date: finalDate }),
+                body: JSON.stringify({ event_name: formData.event_name, title: formData.title, date: finalDate, location: formData.location, link: formData.link, image_url: formData.image_url }),
             });
 
             if (response.ok) {
-                setStatus({ type: 'success', message: editingId ? '성공적으로 수정되었습니다!' : '행사가 성공적으로 등록되었습니다!' });
+                setStatus({ type: 'success', message: currentEditingId ? '성공적으로 수정되었습니다!' : '행사가 성공적으로 등록되었습니다!' });
                 setFormData({ event_name: '', title: '', date: '', location: '', link: '', image_url: '' });
                 setIsSingleDay(false);
                 setEditingId(null);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 /**
  * 💡 메타데이터 설정
@@ -34,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans">
         {children}
+        <Analytics />
       </body>
     </html>
   );
