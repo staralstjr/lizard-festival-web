@@ -1,0 +1,40 @@
+## Vercel Web Analytics Configuration
+
+### Summary
+Configured Vercel Web Analytics for the Next.js project by correcting the Analytics component import path to use the framework-specific version.
+
+### Changes Made
+
+**Modified:**
+- `src/app/layout.tsx` - Updated Analytics import from `@vercel/analytics/react` to `@vercel/analytics/next`
+
+### Implementation Details
+
+The project already had:
+- ✅ `@vercel/analytics` package installed (v2.0.1)
+- ✅ Analytics component added to the root layout
+- ❌ **Issue:** Using incorrect import path (`@vercel/analytics/react` instead of `@vercel/analytics/next`)
+
+**What I Fixed:**
+According to the official Vercel Analytics documentation (fetched from https://vercel.com/docs/analytics/quickstart), Next.js projects should use the framework-specific import path `@vercel/analytics/next` rather than the generic React path.
+
+The corrected implementation now follows the official Next.js App Router pattern:
+```typescript
+import { Analytics } from "@vercel/analytics/next";
+```
+
+This ensures the Analytics component is optimized for Next.js and properly integrates with the framework's features.
+
+### Verification
+- ✅ Build completed successfully with `pnpm build`
+- ✅ Dependencies installed successfully with `pnpm install`
+- ✅ No new linting errors introduced
+- ✅ Analytics component correctly placed in root layout before closing `</body>` tag
+
+### Next Steps
+To complete the setup:
+1. Deploy the application to Vercel
+2. Enable Web Analytics in the Vercel dashboard (Analytics → Enable button)
+3. After deployment, verify setup by checking browser Network tab for requests to `/_vercel/insights/*`
+
+The Analytics component will automatically track page views and web vitals once enabled in the Vercel dashboard.
